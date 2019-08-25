@@ -1,6 +1,11 @@
 // Setup audio context, start with paused playback
 var AudioContext = window.AudioContext || window.webkitAudioContext;
 var audioContext = new AudioContext();
+var shaper = audioContext.createBiquadFilter();
+shaper.connect(audioContext.destination)
+shaper.frequency.value = 300
+shaper.type = "lowpass"
+shaper.Q = 4
 audioContext.suspend()
 
 function generate_buffer(mod_period){
@@ -14,20 +19,14 @@ function generate_buffer(mod_period){
     var lastOut = 0
     if(mod_period ==0){
         for (var i = 0; i < buffer_size; i++) {
-            var white = Math.random() * 2 - 1;
-            buffer_data[i] = (lastOut + (0.02 * white)) / 1.02;
-            lastOut = buffer_data[i];
-            buffer_data[i] *= 3.5;
+            buffer_data[i] = Math.random() * 2 - 1;
         }
     }else{
         var samples_period = mod_period*audioContext.sampleRate
         var sin_scale =  (2 * Math.PI) / samples_period
         for (var i = 0; i < buffer_size; i++) {
             vol_scale = 0.5*Math.sin(sin_scale * i) + 1
-            var white = Math.random() * 2 - 1;
-            buffer_data[i] = (lastOut + (0.02 * white)) / 1.02;
-            lastOut = buffer_data[i];
-            buffer_data[i] *= 3.5 * vol_scale;
+            buffer_data[i] = (Math.random() * 2 - 1) * vol_scale;
         }
     }
     return buffer
@@ -37,7 +36,7 @@ var white_noise = audioContext.createBufferSource();
 white_noise.buffer = generate_buffer(0);
 white_noise.loop = true;
 white_noise.start(0);
-white_noise.connect(audioContext.destination);
+white_noise.connect(shaper);
 
 function volmod_period(){
     period=$("#volmodPeriod").val()
