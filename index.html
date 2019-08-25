@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <title>Noise!</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <script src="jquery-3.4.1.min.js"></script>
+        <script src="noise.js"></script>
+    </head>
+    <body>
+        <div class="centdiv">
+            <input type="button" value="Start" id="butStart" onclick=play()><br />
+            <input type="button" value="Stop" id="butStop" onclick=pause()><br />
+            <input type="button" value="PULSE" id="volmodEnable" onclick=volmod_enable()><br />
+            <input type="number" value=0.5 id="volmodPeriod" min=0.01 step="0.1" onchange=volmod_update()>
+        </div>
+
+        <audio loop autoplay id="audio" onplay=audioContext.resume() onpause=audioContext.suspend()>
+            <source src="silence.wav" type="audio/wav"> 
+            No support for audio
+        </audio>
+    </body>
+</html>
