@@ -5,7 +5,7 @@ var shaper = audioContext.createBiquadFilter();
 shaper.connect(audioContext.destination)
 shaper.frequency.value = 300
 shaper.type = "lowpass"
-shaper.Q = 4
+shaper.Q = 0.4
 audioContext.suspend()
 
 function generate_buffer(mod_period){
@@ -33,13 +33,15 @@ function generate_buffer(mod_period){
 }
 
 var white_noise = audioContext.createBufferSource();
-white_noise.buffer = generate_buffer(0);
+white_noise.buffer = generate_buffer(1/0.01);
 white_noise.loop = true;
 white_noise.start(0);
 white_noise.connect(shaper);
 
-function volmod_period(){
-    period=$("#volmodPeriod").val()
+white_noise.buffer = generate_buffer(0);
+
+function get_pulse_hz(){
+    period=$("#pulsePeriod").val()
     return 1.0/period
 }
 
@@ -54,21 +56,43 @@ function pause() {
 
 }
 var is_pulsing = false
-function volmod_enable(){
+function pulse_enable(){
     if(!is_pulsing){
-        volmod_hz = volmod_period()
+        volmod_hz = get_pulse_hz()
         white_noise.buffer = generate_buffer(volmod_hz);
-        $("#volmodEnable").val("!PULSE!")
+        $("#pulseEnable").val("!PULSE!")
     }else{
         white_noise.buffer = generate_buffer(0);
-        $("#volmodEnable").val("PULSE")
+        $("#pulseEnable").val("PULSE")
     }
     is_pulsing = !is_pulsing;
 }
 
-function volmod_update(){
-    if(is_pulsing){
-        volmod_hz = volmod_period()
+function whiteness_drag(){
+    $("#whiteness")[0].innerText = "whiteness " + (1*$("#shaperFreq")[0].value).toFixed(0)
+}
+
+function pulse_drag(){
+    $("#pulseHz")[0].innerText = "pulse " + (1*$("#pulsePeriod")[0].value).toFixed(2) + "Hz"
+}
+
+function filter_update(){
+    $("#whiteness")[0].innerText = "whiteness " + (1*$("#shaperFreq")[0].value).toFixed(0)
+    shaper.frequency.value=$("#shaperFreq")[0].value
+}
+
+function update_pulse(){
+    volmod_hz = get_pulse_hz()
+    $("#pulseHz")[0].innerText = "pulse " + (1*$("#pulsePeriod")[0].value).toFixed(2) + "Hz"
+    if(volmod_hz < 0.01){
+        $("#pulsePeriod").val(0.01)
+    }
+    else if(is_pulsing){
         white_noise.buffer = generate_buffer(volmod_hz);
     }
+}
+
+function init(){
+    $("#pulseHz")[0].innerText = "pulse " + (1*$("#pulsePeriod")[0].value).toFixed(2) + "Hz"
+    $("#whiteness")[0].innerText = "whiteness " + (1*$("#shaperFreq")[0].value).toFixed(0)
 }
