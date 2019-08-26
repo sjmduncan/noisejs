@@ -1,3 +1,6 @@
+
+<meta charset="UTF-8">
+
 <html>
     <head>
         <title>Noise!</title>
@@ -10,9 +13,9 @@
             <input type="button" value="START" id="butStart" class="button-unselected" onclick=play_pause()>
             <input type="button" value="PULSE" id="pulseEnable" class="button-unselected" onclick=pulse_enable()>
             <p id="pulseHz">Pulse At</p>
-            <input type="range" min=-1.60 max=1.6124379124341003 value=-0.69 step=0.001 id="pulsePeriod" onchange=update_pulse() ondrag=pulse_drag()>
+            <input type="range" min=-1.60 max=2.301584592660462 value=-0.69 step=0.0001 id="pulsePeriod" onchange=update_pulse() ondrag=pulse_drag()>
             <p id="whiteness">Whiteness:</p>
-            <input type="range" min=100 max=1500 step=1 value=400 id="shaperFreq" onchange=filter_update() ondrag=whiteness_drag()>
+            <input type="range" min=100 max=1500 step=70 value=400 id="shaperFreq" onchange=filter_update() ondrag=whiteness_drag()>
             <p><a href="https://github.com/sjmduncan/noisejs">src</a></p>
         </div>
 

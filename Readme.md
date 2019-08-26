@@ -3,21 +3,24 @@
 [Demo Here](https://sjmduncan.github.io/noise/index.html).
 
 Once upon a time I used [ChromaDoze](https://github.com/pmarks-net/chromadoze) for all of my coloured noise needs.
-Then Android and I parted ways and haven't found a replacement noise machine. 
+Then Android and I parted ways and to date nothing has come close to ChromaDoze for ASMR/sleep/focus/generally drowning out distracing noises with noise that suits my tastes which is also not just a pre-recorded loop.
 
-This is my current replacement: a basic Javascript procedural noise machine with adjustable lowpass shaping (`whiteness`), sinusoidal volume modulation (`PULSE`), and most importantly background playback in iOS via (ab)use of the `<audio>` tag.
-
+This is my current solution: a basic Javascript procedural noise machine with adjustable lowpass shaping (`WHITENESS`), sinusoidal volume modulation (`PULSE`), and most importantly iOS background playback (via (ab)use of the `<audio>` tag).
 
 ## How
 
 1. Generate white noise buffer, apply sinusoidal amplituded modulation if `PULSE` is enabled. Re-generate the buffer when `PULSE` is enabled/disabled/modified
 2. Pass buffer to `AudioBufferSourceNode`
 3. Connect `AudioBufferSourceNode` to `BiquadFilterNode`
-4. Connect `BiquadFilterNode` to the `AudioDestinationNode` of the window AudioContext
-5. Sync the `AudioContext` play state (`suspend/resume`) with that of an `<audio>` element which just infinitely loops a short silent `.wav` file, otherwise mobile browsers will kill playback when you use other apps or lock the screen
-    1. Note that pause from the mobile UI will work but play/resume (probably) won't because Javascript execution is not allowed for background apps/browser tabs (at least under iOS), so play state sync will break once paused.
+4. Connect `BiquadFilterNode` to the `AudioDestinationNode` of the window `AudioContext`
+5. Sync the `AudioContext` play state (`suspend/resume`) with that of an `<audio>` element which just infinitely loops a short silent `.wav` file, otherwise mobile browsers will kill playback whenever the browser is not in the foreground (note that pause via the audio control menu will work because it simply kills all audio playback when the `<audio>` element is paused. Play/resume (most likely) won't work because Javascript execution is not allowed for background browsers/tabs, at least in Safari/iOS).
 
-The noise buffer is up to 30 seconds long, and the actual length varies depending on the maximum exact multiple (in sample counts) of the `PULSE` period which fits in the 30 second buffer (if `PULSE` is enabled, otherwise it's just 30 seconds of white noise).
-The initial `AudioBufferSource` has to be passed a full 30 second buffer because Safari (at least under iOS) doesn't like it when buffer sizes get bigger later (desktop firefox/chrome seem okay with that though).
-`PULSE` period starts at 0.2Hz to 5Hz (so you can do theta waves but not binaural ones, sorry), and is adjustable on a log scale.
-Whiteness ranges starts at 1 (lowpass cutoff=100Hz) and goes to 11 (lowpass cutoff=1.5kHz), because above that is too white for my personal taste.
+The noise buffer is up to 30 seconds long, and the actual length may be shorter (down to about 25 seconds) depending on the minimum exact multiple of of the `PULSE` period (in sample counts) which fits in the 30 second buffer (to ensure seamless looping).
+If `PULSE` is disabled then it's just 30 seconds of plain old white noise.
+
+For `PULSE` to work under Safari/iOS the first buffer used by the `AudioBufferSourceNode` must be the maximum length of any future buffer, and future buffers which are bigger will be truncated to the size of the first initialization buffer and the loop will not be seamless.
+Desktop browsers are okay with buffer size growing after initialization (at least Chrome/Firefox are).
+
+`PULSE` period starts at 0.2Hz to 10Hz (so you can do theta waves but not binaural ones, sorry), and the slider adjustment is log-scaled.
+
+`WHITENESS` starts at 1 (lowpass cutoff=100Hz) and goes to 11 (lowpass cutoff=1.5kHz), because whiter than 11 is too white for even my pasty tastes. 

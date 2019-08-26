@@ -10,12 +10,12 @@ audioContext.suspend()
 
 function generate_buffer(mod_period){
     //TODO Generate shaped noise, avoid biquadfilter
+    //TODO Binaural beat generation
+    //TODO Adjust volume for whiter noises
     var bloop = 30
     if(mod_period != 0){
         var periods = Math.floor(bloop/mod_period)
         var buffer_size = periods*mod_period*audioContext.sampleRate
-        console.log(periods)
-        console.log(bloop/mod_period)
     }
     else{
         var buffer_size = bloop*audioContext.sampleRate
@@ -43,7 +43,6 @@ white_noise.buffer = generate_buffer(1.0/Math.exp(-1.6));
 white_noise.loop = true;
 white_noise.start(0);
 white_noise.connect(shaper);
-
 white_noise.buffer = generate_buffer(0);
 
 function get_pulse_hz(){
@@ -52,7 +51,6 @@ function get_pulse_hz(){
 }
 
 function get_whitenes_factor(){
-    //TODO: Adjust volume for whiter noises
     return ($("#shaperFreq")[0].value-100)*(10/1400) + 1
 }
 
@@ -74,11 +72,10 @@ function play_pause(){
     
 }
 
-var defaultButtonColor
 function pulse_enable(){
     if($("#pulseEnable")[0].value == "PULSE"){
-        volmod_hz = get_pulse_hz()
-        white_noise.buffer = generate_buffer(1.0/volmod_hz);
+        pulse_hz = get_pulse_hz()
+        white_noise.buffer = generate_buffer(1.0/pulse_hz);
         $("#pulseEnable")[0].value = "UNPULSE"
         $("#pulseEnable").removeClass("button-unselected")
         $("#pulseEnable").addClass("button-selected")
@@ -90,30 +87,32 @@ function pulse_enable(){
     }
 }
 
-function whiteness_drag(){
-    $("#whiteness")[0].innerText = "whiteness " + get_whitenes_factor().toFixed(2)
+function update_whiteness_val(){
+    num_str = get_whitenes_factor().toFixed(0)
+    $("#whiteness")[0].innerText = "WHITENESS " + num_str.padStart(2,0)
+}
+function update_pulse_val(){
+    $("#pulseHz")[0].innerText = "PULSE " + get_pulse_hz().toFixed(2) + "Hz"
 }
 
-function pulse_drag(){
-    $("#pulseHz")[0].innerText = "pulse " + get_pulse_hz().toFixed(2) + "Hz"
-}
+function whiteness_drag(){update_whiteness_val()}
+function pulse_drag(){update_pulse_val()}
 
 function filter_update(){
-    $("#whiteness")[0].innerText = "whiteness " + get_whitenes_factor().toFixed(2)
+    update_whiteness_val()
     shaper.frequency.value=$("#shaperFreq")[0].value
 }
 
 function update_pulse(){
-    volmod_hz = get_pulse_hz()
-    $("#pulseHz")[0].innerText = "pulse " + volmod_hz.toFixed(2) + "Hz"
+    pulse_hz = get_pulse_hz()
+    update_pulse_val()
     if($("#pulseEnable")[0].value != "PULSE"){
-        white_noise.buffer = generate_buffer(1.0/volmod_hz);
+        white_noise.buffer = generate_buffer(1.0/pulse_hz);
     }
 }
 
 function init(){
-    $("#pulseHz")[0].innerText = "pulse " + get_pulse_hz().toFixed(2) + "Hz"
-    $("#whiteness")[0].innerText = "whiteness " + get_whitenes_factor().toFixed(2)
+    update_pulse_val()
+    update_whiteness_val()
     shaper.frequency.value = $("#shaperFreq")[0].value
-    defaultButtonColor = $("#pulseEnable")[0].style.backgroundColor
 }
