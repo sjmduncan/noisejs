@@ -7,17 +7,13 @@
     </head>
     <body onload=init()>
         <div class="centdiv">
-            <input type="button" value="Start" id="butStart" onclick=play()><br />
-            <input type="button" value="Stop" id="butStop" onclick=pause()><br />
-            <input type="button" value="PULSE" id="pulseEnable" onclick=pulse_enable()><br />
-            <div style="border:solid 1px #fff; width:312px; margin:auto;">
-                <p id="pulseHz">Pulse At</p>
-                <input type="range" min=0.01 max=5 value=0.5 step=0.01 id="pulsePeriod" onchange=update_pulse() ondrag=pulse_drag()>
-            </div>
-            <div style="border:solid 1px #fff; width:312px; margin:auto;">
-                <p id="whiteness">Whiteness:</p>
-                <input type="range" min=100 max=1500 value=400 id="shaperFreq" onchange=filter_update() ondrag=whiteness_drag()>
-            </div>
+            <input type="button" value="START" id="butStart" class="button-unselected" onclick=play_pause()>
+            <input type="button" value="PULSE" id="pulseEnable" class="button-unselected" onclick=pulse_enable()>
+            <p id="pulseHz">Pulse At</p>
+            <input type="range" min=-1.60 max=1.6124379124341003 value=-0.69 step=0.001 id="pulsePeriod" onchange=update_pulse() ondrag=pulse_drag()>
+            <p id="whiteness">Whiteness:</p>
+            <input type="range" min=100 max=1500 step=1 value=400 id="shaperFreq" onchange=filter_update() ondrag=whiteness_drag()>
+            <p><a href="https://github.com/sjmduncan/noisejs">src</a></p>
         </div>
 
         <audio loop autoplay id="audio" onplay=audioContext.resume() onpause=audioContext.suspend()>
