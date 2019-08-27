@@ -1,0 +1,26 @@
+
+<meta charset="UTF-8">
+
+<html>
+    <head>
+        <title>Binaural!</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <script src="jquery-3.4.1.min.js"></script>
+        <script src="binaural.js"></script>
+    </head>
+    <body onload=init()>
+        <div class="centdiv">
+            <input type="button" value="START" id="butStart" class="button-unselected" onclick=play_pause()>
+            <p id="pulseHz">Pulse At</p>
+            <input type="range" min=-1.60 max=2.301584592660462 value=-0.69 step=0.0001 id="pulsePeriod" onchange=update_pulse() ondrag=pulse_drag()>
+            <p id="base">BASE:</p>
+            <input type="range" min=100 max=400 step=5 value=200 id="basefreq" onchange=basefreq_update() ondrag=basefreq_drag()>
+            <p><a href="https://github.com/sjmduncan/noisejs">src</a></p>
+        </div>
+
+        <audio loop autoplay id="audio" onplay=audioContext.resume() onpause=audioContext.suspend()>
+            <source src="silence.wav" type="audio/wav"> 
+            No support for audio
+        </audio>
+    </body>
+</html>
